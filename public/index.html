@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pogoda</title>
+  <style>
+    body { font-family: sans-serif; max-width: 500px; margin: 40px auto; }
+    label, select, button { display: block; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Sprawdź pogodę</h1>
+
+  <label for="country">Wybierz kraj:</label>
+  <select id="country">
+    <option value="PL">Polska</option>
+    <option value="DE">Niemcy</option>
+    <option value="FR">Francja</option>
+  </select>
+
+  <label for="city">Wybierz miasto:</label>
+  <select id="city">
+    <option value="Warszawa">Warszawa</option>
+    <option value="Kraków">Kraków</option>
+    <option value="Gdańsk">Gdańsk</option>
+  </select>
+
+  <button id="check">Pokaż pogodę</button>
+
+  <div id="result"></div>
+
+  <script>
+    const countryToCities = {
+      PL: ["Warszawa", "Kraków", "Gdańsk"],
+      DE: ["Berlin", "Monachium", "Hamburg"],
+      FR: ["Paryż", "Lyon", "Marsylia"]
+    };
+
+    document.getElementById("country").addEventListener("change", function () {
+      const cities = countryToCities[this.value];
+      const citySelect = document.getElementById("city");
+      citySelect.innerHTML = "";
+      cities.forEach(city => {
+        const option = document.createElement("option");
+        option.value = city;
+        option.textContent = city;
+        citySelect.appendChild(option);
+      });
+    });
+
+    document.getElementById("check").addEventListener("click", async () => {
+      const country = document.getElementById("country").value;
+      const city = document.getElementById("city").value;
+      const res = await fetch("/weather", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ country, city })
+      });
+      const data = await res.json();
+      const out = document.getElementById("result");
+      if (data.error) {
+        out.innerHTML = `<p style='color:red'>Błąd: ${data.error}</p>`;
+      } else {
+        out.innerHTML = `
+          <p><strong>Temperatura:</strong> ${data.temperature}°C</p>
+          <p><strong>Opis:</strong> ${data.description}</p>
+          <p><strong>Wilgotność:</strong> ${data.humidity}%</p>
+          <p><strong>Wiatr:</strong> ${data.wind} m/s</p>`;
+      }
+    });
+  </script>
+</body>
+</html>

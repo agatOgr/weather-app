@@ -292,5 +292,3 @@ docker image inspect weather-app --format='Rozmiar obrazu: {{.Size}} bajtów'
 
 
 
-<img width="587" alt="image" src="https://github.com/user-attachments/assets/99143a2e-8e69-4413-9bf9-3fb1bb8e8bcf" />
-

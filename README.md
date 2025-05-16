@@ -5,6 +5,8 @@
 
 Jest to prosta aplikacja webowa stworzona w technologii Node.js z użyciem frameworka Express, umożliwiająca użytkownikowi wybór kraju i miasta z predefiniowanej listy oraz pobranie aktualnych danych pogodowych z API OpenWeatherMap. Aplikacja została zaprojektowana do działania w środowisku kontenerowym. Obraz aplikacji budowany jest przy użyciu zoptymalizowanego pliku Dockerfile w technice wieloetapowego budowania.
 
+
+
 ## Struktura oraz zawartość plików projektu
 
 ```
@@ -16,6 +18,7 @@ weather-app/
 │   └── index.html
 └── alpine-minirootfs-3.21.3-aarch64.tar
 ```
+
 
 ### server.js - serwer aplikacji
 
@@ -76,6 +79,7 @@ app.post("/weather", async (req, res) => {
 app.listen(PORT);
 
 ```
+
 
 ### public/index.html - interfejs użytkownika
 
@@ -166,6 +170,7 @@ app.listen(PORT);
 
 ```
 
+
 ### package.json – metadane projektu
 
 ```
@@ -185,6 +190,7 @@ app.listen(PORT);
 }
 
 ```
+
 
 ### Dockerfile – budowanie obrazu kontenera
 
@@ -235,7 +241,11 @@ HEALTHCHECK --interval=5s --timeout=3s --start-period=3s --retries=2 \
 CMD ["node", "server.js"]
 
 ```
+
+
+
 ## Polecenia 
+
 
 #### Budowa obrazu kontenera
 
@@ -246,6 +256,7 @@ docker build -t weather-app .
 <img width="1041" alt="image" src="https://github.com/user-attachments/assets/0fc3cafc-ec53-4d73-9b8c-ec401c9978a0" />
 
 <img width="989" alt="image" src="https://github.com/user-attachments/assets/ac484f17-4d32-46f8-89a9-00739fe37120" />
+
 
 
 #### Uruchomienie kontenera
@@ -261,6 +272,7 @@ docker run -d -p 3000:3000 \
 <img width="1037" alt="image" src="https://github.com/user-attachments/assets/672ab684-dd19-416f-82b6-427ac505fbac" />
 
 
+
 #### Sposób uzyskania logów
 
 Aplikacja po uruchomieniu wypisuje podstawowe informacje diagnostyczne do standardowego wyjścia (stdout) za pomocą polecenia console.log(). Logowane dane to: data i godzina uruchomienia aplikacji (App started at ...), imię i nazwisko autora (Author: Agata Ogrodnik), numer portu, na którym aplikacja nasłuchuje (Listening on port ...).
@@ -273,6 +285,8 @@ docker logs pogoda
 
 <img width="504" alt="image" src="https://github.com/user-attachments/assets/4a6a9121-4866-414c-9786-7cafd463a67d" />
 
+
+
 #### Sprawdzenia, ile warstw posiada zbudowany obraz oraz jaki jest rozmiar obrazu
 
 ```
@@ -284,6 +298,8 @@ docker image inspect weather-app --format='Rozmiar obrazu: {{.Size}} bajtów'
 ```
 
 <img width="950" alt="image" src="https://github.com/user-attachments/assets/c14bfe00-f1d3-415c-8dc4-839e99518ead" />
+
+
 
 
 ## Poprawność działania przeglądarki

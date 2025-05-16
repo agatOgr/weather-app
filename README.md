@@ -235,7 +235,58 @@ HEALTHCHECK --interval=5s --timeout=3s --start-period=3s --retries=2 \
 CMD ["node", "server.js"]
 
 ```
+## Polecenia 
 
+#### Budowa obrazu kontenera
+
+```
+docker build -t weather-app .
+```
+
+<img width="1041" alt="image" src="https://github.com/user-attachments/assets/0fc3cafc-ec53-4d73-9b8c-ec401c9978a0" />
+
+<img width="989" alt="image" src="https://github.com/user-attachments/assets/ac484f17-4d32-46f8-89a9-00739fe37120" />
+
+
+#### Uruchomienie kontenera
+
+```
+docker run -d -p 3000:3000 \
+  --name pogoda \
+  -e OPENWEATHER_API_KEY=3183f82e063f384b802d392f4f610a16 \
+  weather-app
+```
+<img width="619" alt="image" src="https://github.com/user-attachments/assets/f3015134-2b7c-49f9-a344-98581cf61538" />
+
+<img width="1037" alt="image" src="https://github.com/user-attachments/assets/672ab684-dd19-416f-82b6-427ac505fbac" />
+
+
+#### Sposób uzyskania logów
+
+Aplikacja po uruchomieniu wypisuje podstawowe informacje diagnostyczne do standardowego wyjścia (stdout) za pomocą polecenia console.log(). Logowane dane to: data i godzina uruchomienia aplikacji (App started at ...), imię i nazwisko autora (Author: Agata Ogrodnik), numer portu, na którym aplikacja nasłuchuje (Listening on port ...).
+
+Logi zostały odczytane za pomocą polecenia:
+
+```
+docker logs pogoda
+```
+
+<img width="504" alt="image" src="https://github.com/user-attachments/assets/4a6a9121-4866-414c-9786-7cafd463a67d" />
+
+#### Sprawdzenia, ile warstw posiada zbudowany obraz oraz jaki jest rozmiar obrazu
+
+```
+docker image inspect weather-app --format='Liczba warstw: {{len .RootFS.Layers}}'
+```
+
+```
+docker image inspect weather-app --format='Rozmiar obrazu: {{.Size}} bajtów'
+```
+
+<img width="950" alt="image" src="https://github.com/user-attachments/assets/c14bfe00-f1d3-415c-8dc4-839e99518ead" />
+
+
+## Poprawność działania przeglądarki
 
 <img width="1145" alt="image" src="https://github.com/user-attachments/assets/5bffc44a-8939-4721-b82b-8f9dfb92932a" />
 

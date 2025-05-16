@@ -5,7 +5,17 @@
 
 Jest to prosta aplikacja webowa stworzona w technologii Node.js z użyciem frameworka Express, umożliwiająca użytkownikowi wybór kraju i miasta z predefiniowanej listy oraz pobranie aktualnych danych pogodowych z API OpenWeatherMap. Aplikacja została zaprojektowana do działania w środowisku kontenerowym. Obraz aplikacji budowany jest przy użyciu zoptymalizowanego pliku Dockerfile w technice wieloetapowego budowania.
 
-## Struktóra oraz zawartość plików projektu
+## Struktura oraz zawartość plików projektu
+
+```
+weather-app/
+├── Dockerfile
+├── package.json
+├── server.js
+├── public/
+│   └── index.html
+└── alpine-minirootfs-3.21.3-aarch64.tar
+```
 
 ### server.js - serwer aplikacji
 

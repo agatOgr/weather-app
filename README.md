@@ -1,7 +1,7 @@
 # weather-app
 
 
-<pre> ```plaintext . ├── server.js # Serwer Express ├── package.json # Zależności i metadane ├── public/ │ └── index.html # UI aplikacji └── Dockerfile # Konfiguracja obrazu Docker ``` </pre>
+<pre> ```plaintext . ├── Dockerfile # Plik budujący obraz Dockera (multi-stage) ├── package.json # Metadane projektu i zależności npm ├── server.js # Główna aplikacja Node.js (Express + fetch) ├── public/ # Folder z frontendem (statyczne pliki) │ └── index.html # UI aplikacji pogodowej (HTML + JS) ``` </pre>
 
 
 <img width="1145" alt="image" src="https://github.com/user-attachments/assets/5bffc44a-8939-4721-b82b-8f9dfb92932a" />

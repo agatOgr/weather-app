@@ -5,7 +5,9 @@
 
 Jest to prosta aplikacja webowa stworzona w technologii Node.js z użyciem frameworka Express, umożliwiająca użytkownikowi wybór kraju i miasta z predefiniowanej listy oraz pobranie aktualnych danych pogodowych z API OpenWeatherMap. Aplikacja została zaprojektowana do działania w środowisku kontenerowym. Obraz aplikacji budowany jest przy użyciu zoptymalizowanego pliku Dockerfile w technice wieloetapowego budowania.
 
-## server.js - serwer aplikacji
+## Struktóra oraz zawartość plików projektu
+
+### server.js - serwer aplikacji
 
 ```
 const express = require("express");          // Import biblioteki Express
@@ -65,7 +67,7 @@ app.listen(PORT);
 
 ```
 
-## public/index.html - interfejs użytkownika
+### public/index.html - interfejs użytkownika
 
 ```
 <!DOCTYPE html>
@@ -154,7 +156,7 @@ app.listen(PORT);
 
 ```
 
-## package.json – metadane projektu
+### package.json – metadane projektu
 
 ```
 {
@@ -174,7 +176,7 @@ app.listen(PORT);
 
 ```
 
-## Dockerfile – budowanie obrazu kontenera
+### Dockerfile – budowanie obrazu kontenera
 
 ```
 # --------- ETAP 1: Budowanie aplikacji w lekkim środowisku ----------

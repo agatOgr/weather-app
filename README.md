@@ -3,6 +3,227 @@
 
 ## Opis projektu
 
+Jest to prosta aplikacja webowa stworzona w technologii Node.js z użyciem frameworka Express, umożliwiająca użytkownikowi wybór kraju i miasta z predefiniowanej listy oraz pobranie aktualnych danych pogodowych z API OpenWeatherMap. Aplikacja została zaprojektowana do działania w środowisku kontenerowym. Obraz aplikacji budowany jest przy użyciu zoptymalizowanego pliku Dockerfile w technice wieloetapowego budowania.
+
+## server.js - serwer aplikacji
+
+```
+const express = require("express");          // Import biblioteki Express
+const fetch = require("node-fetch");         // Import funkcji do wykonywania zapytań HTTP
+const path = require("path");                // Import narzędzi ścieżkowych (do obsługi plików statycznych)
+const app = express();                       // Tworzenie aplikacji Express
+const PORT = process.env.PORT || 3000;       // Port aplikacji (domyślnie 3000 lub z ENV)
+
+const AUTHOR = "Agata Ogrodnik";             // Autor aplikacji
+const startTime = new Date().toISOString();  // Czas uruchomienia aplikacji
+
+// Logowanie wymaganych informacji do konsoli
+console.log(`[START] App started at ${startTime}`);
+console.log(`[INFO] Author: ${AUTHOR}`);
+console.log(`[INFO] Listening on port ${PORT}`);
+
+// Middleware do obsługi JSON i plików statycznych
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
+
+// Endpoint POST do pobierania danych pogodowych
+app.post("/weather", async (req, res) => {
+  const { country, city } = req.body;
+  const apiKey = process.env.OPENWEATHER_API_KEY;
+
+  if (!city || !country) {
+    return res.status(400).json({ error: "Missing city or country" });
+  }
+
+  try {
+    // Zapytanie do API OpenWeatherMap
+    const response = await fetch(
+      `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&units=metric&appid=${apiKey}`
+    );
+    const data = await response.json();
+
+    if (data.cod !== 200) {
+      return res.status(data.cod).json({ error: data.message });
+    }
+
+    // Przetwarzanie danych pogodowych
+    const weather = {
+      temperature: data.main.temp,
+      description: data.weather[0].description,
+      humidity: data.main.humidity,
+      wind: data.wind.speed
+    };
+
+    res.json(weather);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching weather data" });
+  }
+});
+
+// Uruchomienie serwera
+app.listen(PORT);
+
+```
+
+## public/index.html - interfejs użytkownika
+
+```
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pogoda</title>
+  <style>
+    body { font-family: sans-serif; max-width: 500px; margin: 40px auto; }
+    label, select, button { display: block; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Sprawdź pogodę</h1>
+
+  <!-- Wybór kraju -->
+  <label for="country">Wybierz kraj:</label>
+  <select id="country">
+    <option value="PL">Polska</option>
+    <option value="DE">Niemcy</option>
+    <option value="FR">Francja</option>
+  </select>
+
+  <!-- Wybór miasta -->
+  <label for="city">Wybierz miasto:</label>
+  <select id="city">
+    <option value="Warszawa">Warszawa</option>
+    <option value="Kraków">Kraków</option>
+    <option value="Gdańsk">Gdańsk</option>
+  </select>
+
+  <button id="check">Pokaż pogodę</button>
+
+  <!-- Miejsce na wynik -->
+  <div id="result"></div>
+
+  <script>
+    // Lista miast zależna od wybranego kraju
+    const countryToCities = {
+      PL: ["Warszawa", "Kraków", "Gdańsk"],
+      DE: ["Berlin", "Monachium", "Hamburg"],
+      FR: ["Paryż", "Lyon", "Marsylia"]
+    };
+
+    // Aktualizacja miast po zmianie kraju
+    document.getElementById("country").addEventListener("change", function () {
+      const cities = countryToCities[this.value];
+      const citySelect = document.getElementById("city");
+      citySelect.innerHTML = "";
+      cities.forEach(city => {
+        const option = document.createElement("option");
+        option.value = city;
+        option.textContent = city;
+        citySelect.appendChild(option);
+      });
+    });
+
+    // Obsługa kliknięcia przycisku
+    document.getElementById("check").addEventListener("click", async () => {
+      const country = document.getElementById("country").value;
+      const city = document.getElementById("city").value;
+
+      // Wysłanie zapytania do backendu
+      const res = await fetch("/weather", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ country, city })
+      });
+
+      const data = await res.json();
+      const out = document.getElementById("result");
+
+      if (data.error) {
+        out.innerHTML = `<p style='color:red'>Błąd: ${data.error}</p>`;
+      } else {
+        out.innerHTML = `
+          <p><strong>Temperatura:</strong> ${data.temperature}°C</p>
+          <p><strong>Opis:</strong> ${data.description}</p>
+          <p><strong>Wilgotność:</strong> ${data.humidity}%</p>
+          <p><strong>Wiatr:</strong> ${data.wind} m/s</p>`;
+      }
+    });
+  </script>
+</body>
+</html>
+
+```
+
+## package.json – metadane projektu
+
+```
+{
+  "name": "weather-app",               // Nazwa projektu
+  "version": "1.0.0",                  // Wersja aplikacji
+  "description": "Aplikacja pogodowa",// Krótki opis
+  "main": "server.js",                 // Plik wejściowy aplikacji
+  "scripts": {
+    "start": "node server.js"         // Skrypt startowy
+  },
+  "author": "Agata Ogrodnik",         // Autor aplikacji
+  "dependencies": {
+    "express": "^4.18.2",             // Serwer HTTP
+    "node-fetch": "^2.6.1"            // Do wykonywania zapytań HTTP
+  }
+}
+
+```
+
+## Dockerfile – budowanie obrazu kontenera
+
+```
+# --------- ETAP 1: Budowanie aplikacji w lekkim środowisku ----------
+FROM scratch AS app_build
+
+# Dodanie obrazu Alpine jako mini-rootfs
+ADD alpine-minirootfs-3.21.3-aarch64.tar /
+
+# Instalacja Node.js i npm oraz utworzenie użytkownika node
+RUN ["/bin/sh", "-c", "\
+    apk update && \
+    apk upgrade && \
+    apk add --no-cache nodejs npm && \
+    addgroup -S node && adduser -S node -G node \
+"]
+
+WORKDIR /home/node/app
+
+# Kopiowanie plików projektu i zmiana właściciela
+COPY --chown=node:node package.json .
+COPY --chown=node:node server.js .
+COPY --chown=node:node public ./public
+
+# Instalacja zależności
+RUN npm install
+
+# --------- ETAP 2: Finalny obraz aplikacji ----------
+FROM node:22-alpine3.19
+
+# Informacja o autorze (zgodna z OCI)
+LABEL org.opencontainers.image.authors="Agata Ogrodnik"
+
+WORKDIR /home/node/app
+
+# Kopiowanie aplikacji z etapu build
+COPY --from=app_build /home/node/app .
+
+# Wystawienie portu TCP
+EXPOSE 3000
+
+# HEALTHCHECK do sprawdzania dostępności aplikacji
+HEALTHCHECK --interval=5s --timeout=3s --start-period=3s --retries=2 \
+  CMD wget -q --spider http://localhost:3000/ || exit 1
+
+# Uruchomienie serwera
+CMD ["node", "server.js"]
+
+```
+
 
 <img width="1145" alt="image" src="https://github.com/user-attachments/assets/5bffc44a-8939-4721-b82b-8f9dfb92932a" />
 

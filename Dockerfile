@@ -20,7 +20,7 @@
     RUN npm install
     
     # --------- ETAP 2: Ostateczny obraz aplikacji ---------
-    FROM node:22-alpine3.19
+    FROM node:22-alpine3.20
     
     LABEL org.opencontainers.image.authors="Agata Ogrodnik"
     
